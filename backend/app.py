@@ -1,6 +1,6 @@
 import os
 from typing import List, Optional
-
+import openai
 from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -10,9 +10,10 @@ from langchain_upstage import ChatUpstage
 from langchain_upstage import UpstageEmbeddings
 from pinecone import Pinecone, ServerlessSpec
 from pydantic import BaseModel
-import pinecone
 
 load_dotenv()
+
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
 # upstage models
 chat_upstage = ChatUpstage()
@@ -60,6 +61,22 @@ class MessageRequest(BaseModel):
 
 @app.post("/chat")
 async def chat_endpoint(req: MessageRequest):
+    # Call the OpenAI ChatCompletion endpoint
+    response = openai.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[
+            {"role": "system", "content": "당신은 사용자의 마음 상담을 도와주는 챗봇입니다. 따뜻하고 친절하게 답변해주세요."},
+            {"role": "user", "content": req.message},
+        ],
+        # temperature=0.7,
+    )
+    # Extract assistant message
+    assistant_reply = response.choices[0].message.content
+    return {"reply": assistant_reply}
+
+
+@app.post("/assistant")
+async def chat_endpoint(req: MessageRequest):
     qa = RetrievalQA.from_chain_type(llm=chat_upstage,
                                      chain_type="stuff",
                                      retriever=pinecone_retriever,
@@ -68,10 +85,6 @@ async def chat_endpoint(req: MessageRequest):
     result = qa(req.message)
     return {"reply": result['result']}
 
-@app.get("/health")
-@app.get("/")
-async def health_check():
-    return {"status": "ok"}
 
 
 if __name__ == "__main__":

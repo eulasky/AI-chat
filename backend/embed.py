@@ -5,7 +5,6 @@ from dotenv import load_dotenv
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_core.documents import Document
 from langchain_pinecone import PineconeVectorStore
-# from langchain_upstage import UpstageDocumentParseLoader
 from langchain_upstage import UpstageEmbeddings
 from pinecone import Pinecone, ServerlessSpec
 
@@ -20,7 +19,6 @@ embedding_upstage = UpstageEmbeddings(
 pinecone_api_key = os.environ.get("PINECONE_API_KEY")
 pc = Pinecone(api_key=pinecone_api_key)
 index_name = "drug-safety-index"
-# pdf_path = "Galaxy_A_35.pdf"
 
 # create new index
 if index_name not in pc.list_indexes().names():
@@ -41,7 +39,6 @@ if text_column not in df.columns:
 
 # Convert each row to Document object
 docs = [Document(page_content=row[text_column]) for _, row in df.iterrows()]
-
 
 
 # document_parse_loader = UpstageDocumentParseLoader(
