@@ -1,0 +1,144 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom scrollbar (optional) */
+.chat-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+.chat-scroll::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+.chat-scroll {
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+}
+
+/* Additional custom styles if needed */
+body {
+  font-family: "Inter", "Noto Sans KR", sans-serif;
+  transition: background-color 0.3s ease;
+}
+/* --- CSS 변수를 사용한 테마 관리 --- */
+:root {
+  /* 기본 테마: 복약 상담 (주황색 계열) */
+  --bg-main: #fffbeb; /* amber-50 */
+  --bg-sidebar: #ffffff;
+  --bg-header-from: #fcd34d; /* amber-300 */
+  --bg-header-to: #fb923c; /* orange-400 */
+  --text-header: #ffffff;
+  --text-body: #1f2937; /* gray-800 */
+  --text-subtle: #6b7280; /* gray-500 */
+  --border-color: #fde68a; /* amber-200 */
+  --primary-accent: #f97316; /* orange-500 */
+  --primary-accent-hover: #ea580c; /* orange-600 */
+  --chat-bubble-user: #f97316;
+  --chat-bubble-bot: #ffffff;
+  --tag-bg: #ffedd5; /* orange-100 */
+  --tag-text: #9a3412; /* orange-800 */
+}
+
+body.theme-calm {
+  /* 마음 상담 테마 (남색/보라색 계열) */
+  --bg-main: #1e293b; /* slate-800 */
+  --bg-sidebar: #0f172a; /* slate-900 */
+  --bg-header-from: #3730a3; /* indigo-800 */
+  --bg-header-to: #5b21b6; /* violet-800 */
+  --text-header: #e0e7ff; /* indigo-100 */
+  --text-body: #e2e8f0; /* slate-200 */
+  --text-subtle: #94a3b8; /* slate-400 */
+  --border-color: #334155; /* slate-700 */
+  --primary-accent: #818cf8; /* indigo-400 */
+  --primary-accent-hover: #6366f1; /* indigo-500 */
+  --chat-bubble-user: #6366f1;
+  --chat-bubble-bot: #334155;
+  --tag-bg: #3730a3; /* indigo-800 */
+  --tag-text: #c7d2fe; /* indigo-200 */
+}
+
+/* --- 컴포넌트 스타일 --- */
+.bg-main {
+  background-color: var(--bg-main);
+}
+.bg-sidebar {
+  background-color: var(--bg-sidebar);
+}
+.text-body {
+  color: var(--text-body);
+}
+.text-subtle {
+  color: var(--text-subtle);
+}
+.border-color {
+  border-color: var(--border-color);
+}
+.header-gradient {
+  background: linear-gradient(
+    to right,
+    var(--bg-header-from),
+    var(--bg-header-to)
+  );
+}
+.text-header {
+  color: var(--text-header);
+}
+.primary-accent-bg {
+  background-color: var(--primary-accent);
+}
+.primary-accent-bg-hover:hover {
+  background-color: var(--primary-accent-hover);
+}
+.primary-accent-text {
+  color: var(--primary-accent);
+}
+.primary-accent-ring:focus {
+  --tw-ring-color: var(--primary-accent);
+}
+.chat-bubble-user {
+  background-color: var(--chat-bubble-user);
+}
+.chat-bubble-bot {
+  background-color: var(--chat-bubble-bot);
+  border-color: var(--border-color);
+}
+.tag-bg {
+  background-color: var(--tag-bg);
+}
+.tag-text {
+  color: var(--tag-text);
+}
+
+/* 스크롤바 디자인 */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--primary-accent);
+  border-radius: 3px;
+}
+
+/* 기타 트랜지션 */
+#sidebar,
+.component {
+  transition: background-color 0.3s ease, color 0.3s ease,
+    border-color 0.3s ease;
+}
+#sidebar {
+  transition: transform 0.3s ease-in-out, background-color 0.3s ease;
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.message-fade-in {
+  animation: fadeIn 0.3s ease-out forwards;
+}

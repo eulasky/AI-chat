@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI 복약 상담 챗봇</title>
+    <link rel="stylesheet" href="./src/styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+    />
+  </head>
+  <body class="bg-amber-50 h-screen flex flex-col antialiased text-gray-800">
+    <!-- 전체 헤더 -->
+    <header
+      class="component p-4 header-gradient text-header flex items-center justify-between shadow-md flex-shrink-0 z-20"
+    >
+      <div class="flex items-center space-x-3">
+        <button
+          id="menu-toggle-btn"
+          class="md:hidden p-1 rounded-md hover:bg-white/20"
+        >
+          <svg
+            class="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M4 6h16M4 12h16M4 18h16"
+            ></path>
+          </svg>
+        </button>
+        <span
+          id="header-icon"
+          class="text-2xl transition-transform duration-300"
+          >💊</span
+        >
+        <h1 id="header-title" class="text-xl font-bold">AI 복약 상담</h1>
+      </div>
+      <div class="flex items-center gap-4">
+        <!-- 테마 전환 토글 -->
+        <div class="flex items-center gap-2 text-sm">
+          <span id="toggle-label-med" class="font-semibold">복약 상담</span>
+          <label
+            for="theme-toggle"
+            class="relative inline-flex items-center cursor-pointer"
+          >
+            <input
+              type="checkbox"
+              value=""
+              id="theme-toggle"
+              class="sr-only peer"
+            />
+            <div
+              class="w-11 h-6 bg-orange-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-400"
+            ></div>
+          </label>
+          <span id="toggle-label-mind" class="opacity-70">마음 상담</span>
+        </div>
+        <button
+          id="new-chat-btn"
+          class="bg-white/30 text-white px-3 py-1 rounded-md hover:bg-white/40 transition text-sm"
+        >
+          + 새 대화
+        </button>
+      </div>
+    </header>
+
+    <div class="flex flex-1 overflow-hidden relative">
+      <!-- 좌측: 사용자 프로필 패널 (사이드바) -->
+      <aside
+        id="sidebar"
+        class="component bg-sidebar w-80 border-r border-color p-6 flex-shrink-0 flex flex-col absolute md:static inset-y-0 left-0 transform -translate-x-full md:translate-x-0 z-30"
+      >
+        <h2 class="text-xl font-bold mb-6 flex items-center gap-2 text-body">
+          <span class="text-xl">👤</span> 내 프로필
+        </h2>
+        <div class="space-y-4 flex-1 overflow-y-auto custom-scrollbar pr-2">
+          <div>
+            <label for="age" class="block text-sm font-medium text-subtle"
+              >나이</label
+            >
+            <input
+              type="number"
+              id="age"
+              placeholder="나이"
+              class="mt-1 block w-full px-3 py-2 bg-sidebar border border-color rounded-md shadow-sm focus:outline-none focus:ring-1 primary-accent-ring text-body"
+            />
+          </div>
+          <div>
+            <label for="gender" class="block text-sm font-medium text-subtle"
+              >성별</label
+            >
+            <select
+              id="gender"
+              class="mt-1 block w-full px-3 py-2 bg-sidebar border border-color rounded-md shadow-sm focus:outline-none focus:ring-1 primary-accent-ring text-body"
+            >
+              <option value="" disabled selected>성별 선택</option>
+              <option value="남성">남성</option>
+              <option value="여성">여성</option>
+            </select>
+          </div>
+          <div>
+            <label
+              for="conditions"
+              class="block text-sm font-medium text-subtle"
+              >기저질환 (쉼표로 구분)</label
+            >
+            <input
+              type="text"
+              id="conditions"
+              placeholder="예) 고혈압, 임신 계획 중"
+              class="mt-1 block w-full px-3 py-2 bg-sidebar border border-color rounded-md shadow-sm focus:outline-none focus:ring-1 primary-accent-ring text-body"
+            />
+          </div>
+          <div>
+            <label
+              for="medications"
+              class="block text-sm font-medium text-subtle"
+              >현재 복용중인 약/영양제 (쉼표로 구분)</label
+            >
+            <textarea
+              id="medications"
+              rows="3"
+              placeholder="혈압약(아모디핀), 종합비타민"
+              class="mt-1 block w-full px-3 py-2 bg-sidebar border border-color rounded-md shadow-sm focus:outline-none focus:ring-1 primary-accent-ring text-body"
+            ></textarea>
+          </div>
+        </div>
+        <button
+          id="save-profile"
+          class="component mt-6 w-full primary-accent-bg primary-accent-bg-hover text-white font-bold py-2 px-4 rounded-md"
+        >
+          프로필 저장
+        </button>
+      </aside>
+
+      <div
+        id="sidebar-overlay"
+        class="hidden md:hidden fixed inset-0 bg-black/50 z-20"
+      ></div>
+
+      <!-- 중앙: 챗봇 인터페이스 -->
+      <main class="component flex-1 flex flex-col h-full bg-main">
+        <div
+          id="mode-notice"
+          class="p-2 pb-1 text-center text-base font-medium"
+        ></div>
+        <div
+          id="chat-messages"
+          class="flex-1 p-4 sm:p-6 overflow-y-auto custom-scrollbar"
+        ></div>
+        <footer class="component border-t border-color bg-sidebar p-4">
+          <form id="message-form">
+            <div
+              id="drug-tags-container"
+              class="flex flex-wrap gap-2 mb-2"
+            ></div>
+            <div class="flex items-center space-x-2">
+              <input
+                type="text"
+                id="user-input"
+                class="flex-1 border border-color bg-sidebar rounded-md p-2 outline-none focus:ring-1 primary-accent-ring text-body"
+                placeholder="질문을 입력하세요..."
+                required
+              />
+              <button
+                type="button"
+                id="add-drug-btn"
+                class="p-2 text-subtle hover:primary-accent-text"
+                title="약/영양제 추가"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+              </button>
+              <button
+                type="submit"
+                class="component primary-accent-bg primary-accent-bg-hover text-white px-4 py-2 rounded-md flex items-center gap-1"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.428A1 1 0 009.894 15V5.106A1 1 0 008.106 4.106L3.106 5.53A1 1 0 002 6.5v7a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 00-1-1H3V6.5l5.106-1.428a1 1 0 00.788-1.409l-2.894-6.553z"
+                  />
+                </svg>
+                <span>전송</span>
+              </button>
+            </div>
+          </form>
+        </footer>
+      </main>
+    </div>
+
+    <!-- 약/영양제 추가 모달 -->
+    <div
+      id="drug-modal"
+      class="fixed inset-0 bg-gray-600 bg-opacity-50 h-full w-full flex items-center justify-center hidden z-40"
+    >
+      <div
+        class="component bg-sidebar p-8 rounded-lg shadow-xl w-full max-w-md m-4"
+      >
+        <h3 class="text-lg font-bold mb-4 text-body">
+          💊 약/영양제 검색 및 확인
+        </h3>
+        <div class="relative">
+          <input
+            type="text"
+            id="drug-search-input"
+            class="w-full p-2 border border-color bg-sidebar rounded-md focus:ring-1 primary-accent-ring text-body"
+            placeholder="약 또는 영양제 이름 검색..."
+          />
+          <button
+            id="drug-search-btn"
+            class="absolute right-0 top-0 mt-1.5 mr-1.5 px-3 py-1 primary-accent-bg text-white rounded-md text-sm primary-accent-bg-hover"
+          >
+            검색
+          </button>
+        </div>
+        <div
+          id="drug-search-results"
+          class="mt-4 max-h-60 overflow-y-auto custom-scrollbar"
+        ></div>
+        <div class="mt-6 flex justify-end">
+          <button
+            id="close-modal-btn"
+            class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
+          >
+            닫기
+          </button>
+        </div>
+      </div>
+    </div>
+    <script type="module" src="./src/app.js"></script>
+  </body>
+</html>
